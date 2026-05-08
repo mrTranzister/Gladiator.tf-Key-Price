@@ -1,5 +1,5 @@
 # Gladiator.tf-Key-Price
-Displays key price from Gladiator.tf on the backpack.tf
+Displays the global key price used for trades by Gladiator.tf bots.
 
 # Installation
 1. Install <a href="https://www.tampermonkey.net/" target="_blank" rel="noopener noreferrer">Tampermonkey</a> browser extension
