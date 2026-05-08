@@ -2,7 +2,7 @@
 // @name         Gladiator.tf Key Price
 // @namespace    http://tampermonkey.net/
 // @version      1.8
-// @description  Displays key price from Gladiator.tf on the backpack.tf
+// @description  Displays the global key price at which Gladiator.tf bots trade on the Backpack.tf.
 // @author       Gemini+mrTranzister
 // @match        *://*.backpack.tf/*
 // @connect      gladiator.tf
