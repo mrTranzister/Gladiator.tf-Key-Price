@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gladiator.tf Key Price
 // @namespace    http://tampermonkey.net/
-// @version      1.8
+// @version      1.9
 // @description  Displays the global key price at which Gladiator.tf bots trade on the Backpack.tf.
 // @author       Gemini+mrTranzister
 // @match        *://*.backpack.tf/*
@@ -92,22 +92,51 @@
 
         GM_xmlhttpRequest({
             method: "GET",
-            url: "https://gladiator.tf/",
+            //
+            url: "https://gladiator.tf/?_t=" + Date.now(),
+            headers: {
+                "Cache-Control": "no-cache",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+            },
             timeout: 10000,
             onload: function(response) {
                 refreshBtn.classList.remove('fa-spin');
+
+                //
+                if (response.status !== 200) {
+                    priceSpan.textContent = `HTTP ${response.status}`;
+                    return;
+                }
+
                 try {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(response.responseText, "text/html");
                     const priceElem = doc.querySelector("#latest-key-price");
+
                     if (priceElem) {
-                        let text = priceElem.innerText.replace(/Buy/gi, 'B:').replace(/Sell/gi, 'S:').replace(/Ref/gi, '').trim();
+                        //
+                        let text = priceElem.textContent;
+                        text = text.replace(/Buy/gi, 'B:')
+                                   .replace(/Sell/gi, 'S:')
+                                   .replace(/Ref/gi, '')
+                                   .replace(/\s+/g, ' ') //
+                                   .trim();
+
                         const now = Date.now();
                         GM_setValue('glad_key_price', text);
                         GM_setValue('glad_key_time', now);
                         renderPrice(text, now);
+                    } else {
+                        //
+                        if (response.responseText.toLowerCase().includes("cloudflare")) {
+                            priceSpan.textContent = "CF Blocked";
+                        } else {
+                            priceSpan.textContent = "Not Found";
+                        }
                     }
-                } catch(e) { priceSpan.textContent = "Error"; }
+                } catch(e) {
+                    priceSpan.textContent = "Parse Err";
+                }
             },
             onerror: function() {
                 refreshBtn.classList.remove('fa-spin');
